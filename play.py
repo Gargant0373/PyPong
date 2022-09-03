@@ -12,8 +12,7 @@ pygame.mixer.music.set_volume(0.05)
 pygame.mixer.music.play(-1)
 
 pygame.font.init()
-ORANGE_SCORE_FONT = pygame.font.SysFont("comicsans", 40)
-PINK_SCORE_FONT = pygame.font.SysFont("comicsans", 40)
+FONT = pygame.font.SysFont("comicsans", 40)
 
 PONG_WIDTH, PONG_HEIGHT = 10, 50
 BALL_WIDTH, BALL_HEIGHT = 10, 10
@@ -44,13 +43,16 @@ def draw(orange, pink, ball, orange_score, pink_score):
     WIN.blit(PINK_PONG, (pink.x, pink.y))
     WIN.blit(BALL, (ball.x, ball.y))
 
-    orange_score_text = ORANGE_SCORE_FONT.render(
+    orange_score_text = FONT.render(
         str(orange_score), 1, (255, 255, 255))
-    pink_score_text = PINK_SCORE_FONT.render(
-        str(pink_score), 1, (255, 255, 255))
+    pink_score_text = FONT.render(
+        str(pink_score), 0.3, (255, 255, 255))
+    credits_text = FONT.render("(c) Gargant 2022", 1, (255, 255, 255))
+    credits_text = pygame.transform.scale(credits_text, (int(credits_text.get_width() * 0.3), int(credits_text.get_height() * 0.3)))
 
     WIN.blit(orange_score_text, (WIDTH/2 - 50, 10))
     WIN.blit(pink_score_text, (WIDTH/2 + 50, 10))
+    WIN.blit(credits_text, (WIDTH - credits_text.get_width() - 10, HEIGHT - credits_text.get_height() - 10))
 
     pygame.display.update()
 
