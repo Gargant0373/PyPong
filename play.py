@@ -2,6 +2,18 @@ import pygame
 
 WIDTH, HEIGHT = 1000, 500
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("PyPong")
+
+# play the music
+pygame.mixer.init()
+
+SONG = pygame.mixer.music.load('song.wav')
+pygame.mixer.music.set_volume(0.05)
+pygame.mixer.music.play(-1)
+
+pygame.font.init()
+ORANGE_SCORE_FONT = pygame.font.SysFont("comicsans", 40)
+PINK_SCORE_FONT = pygame.font.SysFont("comicsans", 40)
 
 PONG_WIDTH, PONG_HEIGHT = 10, 50
 BALL_WIDTH, BALL_HEIGHT = 10, 10
@@ -19,14 +31,39 @@ PINK_PONG = pygame.transform.rotate(pygame.transform.scale(
     PINK_PONG_IMAGE, (PONG_WIDTH, PONG_HEIGHT)), 0)
 BALL = pygame.transform.scale(BALL_IMAGE, (BALL_WIDTH, BALL_HEIGHT))
 
+PING_SOUND = pygame.mixer.Sound("ping.wav")
+PONG_SOUND = pygame.mixer.Sound("pong.wav")
+EXPLODE_SOUND = pygame.mixer.Sound("explode.wav")
+
 FPS = 60
 
-def draw(orange, pink, ball):
+
+def draw(orange, pink, ball, orange_score, pink_score):
     WIN.fill((0, 0, 0))
     WIN.blit(ORANGE_PONG, (orange.x, orange.y))
     WIN.blit(PINK_PONG, (pink.x, pink.y))
     WIN.blit(BALL, (ball.x, ball.y))
+
+    orange_score_text = ORANGE_SCORE_FONT.render(
+        str(orange_score), 1, (255, 255, 255))
+    pink_score_text = PINK_SCORE_FONT.render(
+        str(pink_score), 1, (255, 255, 255))
+
+    WIN.blit(orange_score_text, (WIDTH/2 - 50, 10))
+    WIN.blit(pink_score_text, (WIDTH/2 + 50, 10))
+
     pygame.display.update()
+
+
+def play_ping():
+    pygame.mixer.Sound.play(PING_SOUND)
+
+
+def play_pong():
+    pygame.mixer.Sound.play(PONG_SOUND)
+
+def play_explode():
+    pygame.mixer.Sound.play(EXPLODE_SOUND)
 
 
 def check_movement(orange, pink, keys_pressed):
@@ -48,55 +85,53 @@ def check_movement(orange, pink, keys_pressed):
             pink.y = HEIGHT - PONG_HEIGHT
 
 
-def handle_ball_movement(ball, orange, pink, ball_x_direction, ball_y_direction):
+def handle_ball_movement(ball, orange, pink, ball_x_direction, ball_y_direction, orange_score, pink_score):
     middle_ball_y = ball.y + BALL_HEIGHT/2
     middle_orange_y = orange.y + PONG_HEIGHT/2
     middle_pink_y = pink.y + PONG_HEIGHT/2
-    
+
     # out of bor
     if ball.x < 0:
         ball.x = WIDTH/2
         ball.y = HEIGHT/2
         ball_x_direction *= -1
         ball_y_direction = 0
+        pink_score += 1
+        play_explode()
     elif ball.x > WIDTH:
         ball.x = WIDTH/2
         ball.y = HEIGHT/2
         ball_x_direction *= - 1
         ball_y_direction = 0
+        orange_score += 1
+        play_explode()
     if ball.y < 0 or ball.y > HEIGHT:
         ball_y_direction *= -1
-    
+        play_pong()
+
     # ball collision with orange
     if ball.colliderect(orange):
-        if abs(middle_ball_y - middle_pink_y) > 15:
-            if middle_ball_y > middle_orange_y:
-                ball_y_direction = 1
-            else:
-                ball_y_direction = -1
-        else:
-            ball_y_direction = 0
+        ball_y_direction = (middle_ball_y - middle_orange_y) / 15
         ball_x_direction = 1
-    
+        play_ping()
+
     # ball collision with pink
     if ball.colliderect(pink):
-        if abs(middle_ball_y - middle_pink_y) > 15:
-            if middle_ball_y > middle_pink_y:
-                ball_y_direction = 1
-            else:
-                ball_y_direction = -1
-        else:
-            ball_y_direction = 0
+        ball_y_direction = (middle_ball_y - middle_pink_y) / 15
         ball_x_direction = -1
+        play_ping()
 
     ball.x += ball_x_direction * BALL_VEL
     ball.y += ball_y_direction * BALL_VEL
-    return (ball_x_direction, ball_y_direction)
+    return (ball_x_direction, ball_y_direction, orange_score, pink_score)
 
 
 def main():
     run = True
     clock = pygame.time.Clock()
+
+    orange_score = 0
+    pink_score = 0
 
     orange = pygame.Rect(WIDTH/20, HEIGHT/2 -
                          PONG_HEIGHT / 2, PONG_WIDTH, PONG_HEIGHT)
@@ -115,9 +150,10 @@ def main():
                 run = False
 
         keys_pressed = pygame.key.get_pressed()
-        draw(orange, pink, ball)
+        draw(orange, pink, ball, orange_score, pink_score)
         check_movement(orange, pink, keys_pressed)
-        ball_x_direction, ball_y_direction = handle_ball_movement(ball, orange, pink, ball_x_direction, ball_y_direction)
+        ball_x_direction, ball_y_direction, orange_score, pink_score = handle_ball_movement(
+            ball, orange, pink, ball_x_direction, ball_y_direction, orange_score, pink_score)
 
 
 if __name__ == "__main__":
