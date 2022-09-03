@@ -1,4 +1,5 @@
 import pygame
+import os
 
 WIDTH, HEIGHT = 1000, 500
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -7,7 +8,7 @@ pygame.display.set_caption("PyPong")
 # play the music
 pygame.mixer.init()
 
-SONG = pygame.mixer.music.load('song.wav')
+SONG = pygame.mixer.music.load(os.path.join('Assets', 'Sounds', 'song.wav'))
 pygame.mixer.music.set_volume(0.05)
 pygame.mixer.music.play(-1)
 
@@ -20,9 +21,11 @@ BALL_WIDTH, BALL_HEIGHT = 10, 10
 VEL = 5
 BALL_VEL = 3.0
 
-ORANGE_PONG_IMAGE = pygame.image.load('orange.png')
-PINK_PONG_IMAGE = pygame.image.load('pink.png')
-BALL_IMAGE = pygame.image.load('ball.png')
+ORANGE_PONG_IMAGE = pygame.image.load(
+    os.path.join('Assets', 'Sprites', 'orange.png'))
+PINK_PONG_IMAGE = pygame.image.load(
+    os.path.join('Assets', 'Sprites', 'pink.png'))
+BALL_IMAGE = pygame.image.load(os.path.join('Assets', 'Sprites', 'ball.png'))
 
 ORANGE_PONG = pygame.transform.rotate(pygame.transform.scale(
     ORANGE_PONG_IMAGE, (PONG_WIDTH, PONG_HEIGHT)), 0)
@@ -30,9 +33,10 @@ PINK_PONG = pygame.transform.rotate(pygame.transform.scale(
     PINK_PONG_IMAGE, (PONG_WIDTH, PONG_HEIGHT)), 0)
 BALL = pygame.transform.scale(BALL_IMAGE, (BALL_WIDTH, BALL_HEIGHT))
 
-PING_SOUND = pygame.mixer.Sound("ping.wav")
-PONG_SOUND = pygame.mixer.Sound("pong.wav")
-EXPLODE_SOUND = pygame.mixer.Sound("explode.wav")
+PING_SOUND = pygame.mixer.Sound(os.path.join('Assets', 'Sounds', "ping.wav"))
+PONG_SOUND = pygame.mixer.Sound(os.path.join('Assets', 'Sounds', "pong.wav"))
+EXPLODE_SOUND = pygame.mixer.Sound(
+    os.path.join('Assets', 'Sounds', "explode.wav"))
 
 FPS = 60
 
@@ -48,11 +52,13 @@ def draw(orange, pink, ball, orange_score, pink_score):
     pink_score_text = FONT.render(
         str(pink_score), 0.3, (255, 255, 255))
     credits_text = FONT.render("(c) Gargant 2022", 1, (255, 255, 255))
-    credits_text = pygame.transform.scale(credits_text, (int(credits_text.get_width() * 0.3), int(credits_text.get_height() * 0.3)))
+    credits_text = pygame.transform.scale(credits_text, (int(
+        credits_text.get_width() * 0.3), int(credits_text.get_height() * 0.3)))
 
     WIN.blit(orange_score_text, (WIDTH/2 - 50, 10))
     WIN.blit(pink_score_text, (WIDTH/2 + 50, 10))
-    WIN.blit(credits_text, (WIDTH - credits_text.get_width() - 10, HEIGHT - credits_text.get_height() - 10))
+    WIN.blit(credits_text, (WIDTH - credits_text.get_width() -
+             10, HEIGHT - credits_text.get_height() - 10))
 
     pygame.display.update()
 
@@ -63,6 +69,7 @@ def play_ping():
 
 def play_pong():
     pygame.mixer.Sound.play(PONG_SOUND)
+
 
 def play_explode():
     pygame.mixer.Sound.play(EXPLODE_SOUND)
