@@ -15,11 +15,11 @@ pygame.mixer.music.play(-1)
 pygame.font.init()
 FONT = pygame.font.SysFont("comicsans", 40)
 
-PONG_WIDTH, PONG_HEIGHT = 10, 50
-BALL_WIDTH, BALL_HEIGHT = 10, 10
+PONG_WIDTH, PONG_HEIGHT = 15, 75
+BALL_WIDTH, BALL_HEIGHT = 15, 15
 
 VEL = 5
-BALL_VEL = 3.0
+BALL_VEL = 5.0
 
 ORANGE_PONG_IMAGE = pygame.image.load(
     os.path.join('Assets', 'Sprites', 'orange.png'))
